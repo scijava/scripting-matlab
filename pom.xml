@@ -12,8 +12,8 @@
 	<artifactId>scripting-matlab</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>SciJava Scripting: Matlab</name>
-	<description>Matlab scripting language plugin.</description>
+	<name>SciJava Scripting: MATLAB</name>
+	<description>MATLAB scripting language plugin.</description>
 	<url>http://scijava.org/</url>
 	<inceptionYear>2014</inceptionYear>
 
