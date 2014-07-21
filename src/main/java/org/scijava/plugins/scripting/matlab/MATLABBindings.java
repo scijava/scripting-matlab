@@ -8,13 +8,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -104,7 +104,7 @@ public class MATLABBindings implements Bindings {
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
-			//TODO throw exception/print error - 
+			// TODO throw exception/print error -
 		}
 		return null;
 	}
@@ -163,7 +163,7 @@ public class MATLABBindings implements Bindings {
 				(String[]) MATLABControlUtils.proxy().returningEval("who", 1)[0];
 			return vars;
 		}
-		catch (MatlabInvocationException e) {}
+		catch (final MatlabInvocationException e) {}
 		return new String[0];
 	}
 
@@ -173,7 +173,7 @@ public class MATLABBindings implements Bindings {
 	 * @param name - String to sanitize
 	 * @return A variable name permissible in MATLAB
 	 */
-	private String sanitize(String name) {
+	private String sanitize(final String name) {
 		return name.replaceAll("[^\\w]", "_");
 	}
 }
