@@ -68,7 +68,7 @@ public final class MATLABControlUtils {
 				proxy = factory().getProxy();
 			}
 			catch (final MatlabConnectionException e) {
-				return null;
+				throw new IllegalStateException(e);
 			}
 		}
 		return proxy;
