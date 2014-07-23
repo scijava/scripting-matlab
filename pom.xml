@@ -140,4 +140,11 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+
 </project>
