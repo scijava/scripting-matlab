@@ -55,6 +55,10 @@ import org.scijava.script.ScriptService;
  */
 public class MATLABTest {
 
+	/**
+	 * Simple script test for executing a basic MATLAB command and checking
+	 * the return value.
+	 */
 	@Test
 	public void testBasic() throws InterruptedException, ExecutionException,
 		IOException, ScriptException
@@ -67,6 +71,10 @@ public class MATLABTest {
 			.getReturnValue())[0]));
 	}
 
+	/**
+	 * MATLAB supports multi-line notation via {@code ...} at the end of each line.
+	 * Test that this functionality works in scripting as well.
+	 */
 	@Test
 	public void testBasicMultiline() throws InterruptedException,
 		ExecutionException, IOException, ScriptException
@@ -79,6 +87,9 @@ public class MATLABTest {
 			.getReturnValue())[0]));
 	}
 
+	/**
+	 * Test the setting and retrieval of local variables within MATLAB.
+	 */
 	@Test
 	public void testLocals() throws ScriptException {
 		final Context context = new Context(ScriptService.class);
@@ -98,7 +109,10 @@ public class MATLABTest {
 		assertEquals(null, bindings.get("hello"));
 	}
 
-	//TODO document tests
+	/**
+	 * Test an {@code if-else} block to ensure multiline expressions work
+	 * as intended.
+	 */
 	@Test
 	public void testIfElse() throws InterruptedException, ExecutionException,
 		IOException, ScriptException
@@ -111,36 +125,41 @@ public class MATLABTest {
 													"   testVar = 42\n" +
 													"end\n";
 		scriptService.run("ifelse.m", script, true).get();
-		final Object result = scriptService.getLanguageByName("MATLAB").getScriptEngine().get("testVar");
+		// There is no return value from this script, but it should create a new
+		// "testVar" local variable and initialze its value, so we can attempt
+		// reading.
+		final Object result =
+			scriptService.getLanguageByName("MATLAB").getScriptEngine()
+				.get("testVar");
 		assertTrue(result != null);
 		assertTrue(result instanceof double[]);
 		assertTrue(equalDoubleArrays(new double[]{42.0}, (double[])result));
 	}
 
+	/**
+	 * Ensures that comments do not interfere with script execution.
+	 */
 	@Test
-	public void testComments() throws InterruptedException, ExecutionException,
-		IOException, ScriptException
+	public void testComments() throws IOException, ScriptException,
+		InterruptedException, ExecutionException
 	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-		final String script = "% comment line one\n" +
-													"% comment line two\n" +
-													"if (1 == 2)\n" +
-													"   testVar = 75\n" +
-													"else\n" +
-													"% comment line three\n" +
-													"   testVar = 42\n" +
-													"end\n";
+		final String script =
+			"% comment line one\n" + "% comment line two\n" + "if (1 == 2)\n"
+				+ "   testVar = 75\n" + "else\n" + "% comment line three\n"
+				+ "   testVar = 42\n" + "end\n";
 		scriptService.run("ifelse.m", script, true).get();
-		final Object result = scriptService.getLanguageByName("MATLAB").getScriptEngine().get("testVar");
+		final Object result =
+			scriptService.getLanguageByName("MATLAB").getScriptEngine()
+				.get("testVar");
 		assertTrue(result != null);
 		assertTrue(result instanceof double[]);
-		assertTrue(equalDoubleArrays(new double[]{42.0}, (double[])result));
+		assertTrue(equalDoubleArrays(new double[] { 42.0 }, (double[]) result));
 	}
 
 	// -- Helper methods --
 
-	
 	/**
 	 * Helper method to compare two double arrays
 	 *
