@@ -8,13 +8,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,8 +56,8 @@ import org.scijava.script.ScriptService;
 public class MATLABTest {
 
 	/**
-	 * Simple script test for executing a basic MATLAB command and checking
-	 * the return value.
+	 * Simple script test for executing a basic MATLAB command and checking the
+	 * return value.
 	 */
 	@Test
 	public void testBasic() throws InterruptedException, ExecutionException,
@@ -72,8 +72,8 @@ public class MATLABTest {
 	}
 
 	/**
-	 * MATLAB supports multi-line notation via {@code ...} at the end of each line.
-	 * Test that this functionality works in scripting as well.
+	 * MATLAB supports multi-line notation via {@code ...} at the end of each
+	 * line. Test that this functionality works in scripting as well.
 	 */
 	@Test
 	public void testBasicMultiline() throws InterruptedException,
@@ -110,8 +110,8 @@ public class MATLABTest {
 	}
 
 	/**
-	 * Test an {@code if-else} block to ensure multiline expressions work
-	 * as intended.
+	 * Test an {@code if-else} block to ensure multiline expressions work as
+	 * intended.
 	 */
 	@Test
 	public void testIfElse() throws InterruptedException, ExecutionException,
@@ -119,11 +119,9 @@ public class MATLABTest {
 	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-		final String script = "if (1 == 2)\n" +
-													"   testVar = 75\n" +
-													"else\n" +
-													"   testVar = 42\n" +
-													"end\n";
+		final String script =
+			"if (1 == 2)\n" + "   testVar = 75\n" + "else\n" + "   testVar = 42\n"
+				+ "end\n";
 		scriptService.run("ifelse.m", script, true).get();
 		// There is no return value from this script, but it should create a new
 		// "testVar" local variable and initialze its value, so we can attempt
@@ -133,7 +131,7 @@ public class MATLABTest {
 				.get("testVar");
 		assertTrue(result != null);
 		assertTrue(result instanceof double[]);
-		assertTrue(equalDoubleArrays(new double[]{42.0}, (double[])result));
+		assertTrue(equalDoubleArrays(new double[] { 42.0 }, (double[]) result));
 	}
 
 	/**
