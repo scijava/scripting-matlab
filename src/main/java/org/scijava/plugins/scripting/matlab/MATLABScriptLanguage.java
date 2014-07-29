@@ -41,8 +41,7 @@ import org.scijava.script.AbstractScriptLanguage;
 import org.scijava.script.ScriptLanguage;
 
 /**
- * An adapter of the MATLAB interpreter to ImageJ's scripting interfaces. TODO:
- * determine failure point if MATLAB is not available.
+ * An adapter of the MATLAB interpreter to ImageJ's scripting interfaces.
  *
  * @author Mark Hiner
  * @see ScriptEngine
@@ -64,4 +63,6 @@ public class MATLABScriptLanguage extends AbstractScriptLanguage {
 	public ScriptEngine getScriptEngine() {
 		return new MATLABScriptEngine();
 	}
+
+
 }
