@@ -49,11 +49,11 @@ import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 
 /**
- * MATLAB scripting unit tests (requires a MATLAB installation).
+ * MATLAB scripting integration tests (requires a MATLAB installation).
  *
  * @author Mark Hiner
  */
-public class MATLABTest {
+public class MATLABIT {
 
 	/**
 	 * Simple script test for executing a basic MATLAB command and checking the
