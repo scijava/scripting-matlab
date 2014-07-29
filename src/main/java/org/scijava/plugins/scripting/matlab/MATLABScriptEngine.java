@@ -44,12 +44,30 @@ import org.scijava.script.AbstractScriptEngine;
 
 /**
  * A MATLAB interpreter.
+ * <p>
+ * NB: we use <a
+ * href="https://code.google.com/p/matlabcontrol/">MatlabControl</a> to
+ * interpret MATLAB scripts. There are some limitations of this API:
+ * <ul>
+ * <li>Each line of the script needs to be atomically evaluatable. That is, it
+ * must be passable to an {@code eval} call in MATLAB. If you are unfamiliar
+ * with the notation for converting traditionally multi-line commands, such as
+ * an {@code if...else} block, to single-line, each logical statement is
+ * replaced by a comma. For example, you can write: {@code if 1<2, a=3, end}</li>
+ * <li>If you need to split up multiple lines, use the MATLAB multi-line
+ * character at the end of each line: {@code ...}</li>
+ * <li>If you are running from within MATLAB, you will see an error message with
+ * each evaluation. This is due to the API restrictions on the function calling
+ * from MatlabControl, regarding return values. As long as you see the
+ * appropriate output for your command, the error messages can be disregarded.</li>
+ * </ul>
+ * </p>
  *
  * @author Mark Hiner
  */
 public class MATLABScriptEngine extends AbstractScriptEngine {
 
-	private static final String MULTI_LINE = "...";
+	private static final String COMMENT = "%";
 
 	public MATLABScriptEngine() {
 		engineScopeBindings = new MATLABBindings();
@@ -72,31 +90,42 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		final MatlabProxy proxy = MATLABControlUtils.proxy();
 		final Thread thread = Thread.currentThread();
 		Object finalResult = null;
-		String command = "";
 		try {
 			while (!thread.isInterrupted()) {
-				final String currentLine = bufReader.readLine();
-				if (currentLine == null) break;
+				String command = "sprintf('";
+				while (bufReader.ready()) {
+					final String line = bufReader.readLine();
+					if (line == null) break;
 
-				command += currentLine;
+					// NB: we have to manually exclude comment lines in MATLAB. Otherwise,
+					// the newline characters themselves on the comment lines will be
+					// commented out and ignored - resulting in the first true line of
+					// code being skipped unintentionally.
+					if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
+					command += line + "\\n";
+				}
+				command += "')";
 
-				// MATLAB can read multi-line commands if they have "..." at the end
-				// of each line. MatlabControl however can not evaluate these lines
-				// so we need to build the full command.
-				if (!command.endsWith(MULTI_LINE)) {
-					// Evaluate the command
-					try {
-						finalResult = proxy.returningEval(command, 1);
-					}
-					catch (final MatlabInvocationException e) {
-						// No return value on the script, so just eval the line;
-						proxy.eval(command);
-					}
-					command = "";
+				// Evaluate the command
+				// NB: the first eval turns a multi-line command into something properly
+				// formatted for MATLAB, stored in the MATLAB variable "ans".
+				// We then have to evaluate "ans". However, the eval methods of
+				// MatlabControl force "eval(' + args + ')" and "eval('ans')" displays
+				// the string literal "ans", whereas "eval(ans)" actually evaluates
+				// whatever is stored in ans. We wan the latter behavior, thus the
+				// nested eval.
+				proxy.eval(command);
+
+				try {
+					// Attempt to get a return value
+					finalResult = proxy.returningEval("eval(ans)", 1);
 				}
-				else {
-					command += "\n";
+				catch (final MatlabInvocationException e) {
+					// no return value. Just eval and be done.
+					// NB: modified MATLAB variables can be accessed via the bindings.
+					proxy.eval("eval(ans)");
 				}
+				break;
 			}
 		}
 		catch (final Exception e) {}

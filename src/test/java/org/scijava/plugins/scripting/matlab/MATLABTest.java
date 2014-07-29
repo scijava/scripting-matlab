@@ -98,6 +98,49 @@ public class MATLABTest {
 		assertEquals(null, bindings.get("hello"));
 	}
 
+	//TODO document tests
+	@Test
+	public void testIfElse() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		final String script = "if (1 == 2)\n" +
+													"   testVar = 75\n" +
+													"else\n" +
+													"   testVar = 42\n" +
+													"end\n";
+		scriptService.run("ifelse.m", script, true).get();
+		final Object result = scriptService.getLanguageByName("MATLAB").getScriptEngine().get("testVar");
+		assertTrue(result != null);
+		assertTrue(result instanceof double[]);
+		assertTrue(equalDoubleArrays(new double[]{42.0}, (double[])result));
+	}
+
+	@Test
+	public void testComments() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		final String script = "% comment line one\n" +
+													"% comment line two\n" +
+													"if (1 == 2)\n" +
+													"   testVar = 75\n" +
+													"else\n" +
+													"% comment line three\n" +
+													"   testVar = 42\n" +
+													"end\n";
+		scriptService.run("ifelse.m", script, true).get();
+		final Object result = scriptService.getLanguageByName("MATLAB").getScriptEngine().get("testVar");
+		assertTrue(result != null);
+		assertTrue(result instanceof double[]);
+		assertTrue(equalDoubleArrays(new double[]{42.0}, (double[])result));
+	}
+
+	// -- Helper methods --
+
+	
 	/**
 	 * Helper method to compare two double arrays
 	 *
