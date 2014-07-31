@@ -101,26 +101,29 @@ public class MATLABBindings implements Bindings {
 
 	@Override
 	public Object put(final String name, final Object value) {
+		// Try special MATLAB data types
+		if (MatlabNumericArray.class.isAssignableFrom(value.getClass())) {
+			// Convert the dataset to a MATLAB array and set it as a local variable
+			// within MATLAB.
+			final MatlabTypeConverter converter =
+					new MatlabTypeConverter(MATLABControlUtils.proxy());
+			try {
+				converter.setNumericArray(sanitize(name), (MatlabNumericArray) value);
+				return value;
+			}
+			catch (final MatlabInvocationException e) {
+				System.err.println(e.getStackTrace());
+			}
+		}
+
 		try {
 			MATLABControlUtils.proxy().setVariable(sanitize(name), value);
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
-
-			// Try special MATLAB data types
-			if (MatlabNumericArray.class.isAssignableFrom(value.getClass())) {
-				// Convert the dataset to a MATLAB array and set it as a local variable
-				// within MATLAB.
-				final MatlabTypeConverter converter =
-					new MatlabTypeConverter(MATLABControlUtils.proxy());
-				try {
-					converter.setNumericArray(name, (MatlabNumericArray) value);
-				}
-				catch (final MatlabInvocationException e1) {
-					throw new IllegalArgumentException(e);
-				}
-			}
+				System.err.println(e.getStackTrace());
 		}
+
 		return null;
 	}
 
@@ -161,23 +164,25 @@ public class MATLABBindings implements Bindings {
 		else return null;
 		Object v = null;
 
+		// Attempt to retrieve special MATLAB types
+		try {
+			// try recovering key as a MatlabNumericArray
+			final MatlabTypeConverter converter =
+					new MatlabTypeConverter(MATLABControlUtils.proxy());
+			v = converter.getNumericArray(k);
+		}
+		catch (final MatlabInvocationException e) {
+			System.err.println(e.getStackTrace());
+		}
+
 		try {
 			v = MATLABControlUtils.proxy().getVariable(k);
 			if (remove) MATLABControlUtils.proxy().eval("clear " + k);
 		}
 		catch (final MatlabInvocationException e) {
-
-			// Attempt to retrieve special MATLAB types
-			try {
-				// try recovering key as a MatlabNumericArray
-				final MatlabTypeConverter converter =
-					new MatlabTypeConverter(MATLABControlUtils.proxy());
-				v = converter.getNumericArray(k);
-			}
-			catch (final MatlabInvocationException e1) {
-				System.err.println(e.getStackTrace());
-			}
+			System.err.println(e.getStackTrace());
 		}
+
 		return v;
 	}
 
