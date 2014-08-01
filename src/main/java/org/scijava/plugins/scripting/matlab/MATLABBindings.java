@@ -41,8 +41,12 @@ import java.util.Set;
 import javax.script.Bindings;
 
 import matlabcontrol.MatlabInvocationException;
+import matlabcontrol.MatlabProxy;
 import matlabcontrol.extensions.MatlabNumericArray;
 import matlabcontrol.extensions.MatlabTypeConverter;
+
+import org.scijava.options.OptionsService;
+import org.scijava.plugin.Parameter;
 
 /**
  * A {@link Bindings} wrapper around MATLAB's local variables.
@@ -50,6 +54,9 @@ import matlabcontrol.extensions.MatlabTypeConverter;
  * @author Mark Hiner
  */
 public class MATLABBindings implements Bindings {
+
+	@Parameter
+	private OptionsService optionsService;
 
 	@Override
 	public int size() {
@@ -69,7 +76,7 @@ public class MATLABBindings implements Bindings {
 	@Override
 	public void clear() {
 		try {
-			MATLABControlUtils.proxy().eval("clear");
+			MATLABControlUtils.proxy(opts()).eval("clear");
 		}
 		catch (final MatlabInvocationException e) {}
 	}
@@ -101,12 +108,14 @@ public class MATLABBindings implements Bindings {
 
 	@Override
 	public Object put(final String name, final Object value) {
+		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
+
 		// Try special MATLAB data types
 		if (MatlabNumericArray.class.isAssignableFrom(value.getClass())) {
 			// Convert the dataset to a MATLAB array and set it as a local variable
 			// within MATLAB.
 			final MatlabTypeConverter converter =
-					new MatlabTypeConverter(MATLABControlUtils.proxy());
+					new MatlabTypeConverter(proxy);
 			try {
 				converter.setNumericArray(sanitize(name), (MatlabNumericArray) value);
 				return value;
@@ -117,7 +126,7 @@ public class MATLABBindings implements Bindings {
 		}
 
 		try {
-			MATLABControlUtils.proxy().setVariable(sanitize(name), value);
+			proxy.setVariable(sanitize(name), value);
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
@@ -163,12 +172,13 @@ public class MATLABBindings implements Bindings {
 		if (key instanceof String) k = (String) key;
 		else return null;
 		Object v = null;
+		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
 
 		// Attempt to retrieve special MATLAB types
 		try {
 			// try recovering key as a MatlabNumericArray
 			final MatlabTypeConverter converter =
-					new MatlabTypeConverter(MATLABControlUtils.proxy());
+					new MatlabTypeConverter(proxy);
 			v = converter.getNumericArray(k);
 		}
 		catch (final MatlabInvocationException e) {
@@ -176,8 +186,8 @@ public class MATLABBindings implements Bindings {
 		}
 
 		try {
-			v = MATLABControlUtils.proxy().getVariable(k);
-			if (remove) MATLABControlUtils.proxy().eval("clear " + k);
+			v = proxy.getVariable(k);
+			if (remove) proxy.eval("clear " + k);
 		}
 		catch (final MatlabInvocationException e) {
 			System.err.println(e.getStackTrace());
@@ -192,7 +202,7 @@ public class MATLABBindings implements Bindings {
 	private String[] getVars() {
 		try {
 			final String[] vars =
-				(String[]) MATLABControlUtils.proxy().returningEval("who", 1)[0];
+				(String[]) MATLABControlUtils.proxy(opts()).returningEval("who", 1)[0];
 			return vars;
 		}
 		catch (final MatlabInvocationException e) {}
@@ -207,5 +217,14 @@ public class MATLABBindings implements Bindings {
 	 */
 	private String sanitize(final String name) {
 		return name.replaceAll("[^\\w]", "_");
+	}
+
+	/**
+	 * Convenience method for access to the {@link MATLABOptions}
+	 *
+	 * @return Active {@code MATLABOptions}
+	 */
+	private MATLABOptions opts() {
+		return optionsService.getOptions(MATLABOptions.class);
 	}
 }

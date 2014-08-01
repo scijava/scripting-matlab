@@ -40,6 +40,9 @@ import javax.script.ScriptException;
 import matlabcontrol.MatlabInvocationException;
 import matlabcontrol.MatlabProxy;
 
+import org.scijava.Context;
+import org.scijava.options.OptionsService;
+import org.scijava.plugin.Parameter;
 import org.scijava.script.AbstractScriptEngine;
 
 /**
@@ -69,8 +72,13 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 
 	private static final String COMMENT = "%";
 
-	public MATLABScriptEngine() {
+	@Parameter
+	private OptionsService optionsService;
+
+	public MATLABScriptEngine(final Context context) {
 		engineScopeBindings = new MATLABBindings();
+		context.inject(this);
+		context.inject(engineScopeBindings);
 	}
 
 	@Override
@@ -87,7 +95,9 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 	@Override
 	public Object eval(final Reader reader) throws ScriptException {
 		final BufferedReader bufReader = makeBuffered(reader);
-		final MatlabProxy proxy = MATLABControlUtils.proxy();
+		final MATLABOptions options =
+			optionsService.getOptions(MATLABOptions.class);
+		final MatlabProxy proxy = MATLABControlUtils.proxy(options);
 		final Thread thread = Thread.currentThread();
 		Object finalResult = null;
 		try {

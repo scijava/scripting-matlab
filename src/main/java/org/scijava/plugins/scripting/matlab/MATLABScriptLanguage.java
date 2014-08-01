@@ -61,8 +61,6 @@ public class MATLABScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new MATLABScriptEngine();
+		return new MATLABScriptEngine(getContext());
 	}
-
-
 }
