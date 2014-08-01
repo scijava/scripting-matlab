@@ -34,6 +34,7 @@ package org.scijava.plugins.scripting.matlab;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Random;
 
 import javax.script.ScriptException;
 
@@ -98,45 +99,44 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		final MATLABOptions options =
 			optionsService.getOptions(MATLABOptions.class);
 		final MatlabProxy proxy = MATLABControlUtils.proxy(options);
-		final Thread thread = Thread.currentThread();
 		Object finalResult = null;
 		try {
-			while (!thread.isInterrupted()) {
-				String command = "sprintf('";
-				while (bufReader.ready()) {
-					final String line = bufReader.readLine();
-					if (line == null) break;
+			final String scriptVar = "scijava_script" + new Random().nextInt(999999);
+			String command = scriptVar + " = sprintf('";
+			while (bufReader.ready()) {
+				final String line = bufReader.readLine();
+				if (line == null) break;
 
-					// NB: we have to manually exclude comment lines in MATLAB. Otherwise,
-					// the newline characters themselves on the comment lines will be
-					// commented out and ignored - resulting in the first true line of
-					// code being skipped unintentionally.
-					if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
-					command += line + "\\n";
-				}
-				command += "')";
-
-				// Evaluate the command
-				// NB: the first eval turns a multi-line command into something properly
-				// formatted for MATLAB, stored in the MATLAB variable "ans".
-				// We then have to evaluate "ans". However, the eval methods of
-				// MatlabControl force "eval(' + args + ')" and "eval('ans')" displays
-				// the string literal "ans", whereas "eval(ans)" actually evaluates
-				// whatever is stored in ans. We wan the latter behavior, thus the
-				// nested eval.
-				proxy.eval(command);
-
-				try {
-					// Attempt to get a return value
-					finalResult = proxy.returningEval("eval(ans)", 1);
-				}
-				catch (final MatlabInvocationException e) {
-					// no return value. Just eval and be done.
-					// NB: modified MATLAB variables can be accessed via the bindings.
-					proxy.eval("eval(ans)");
-				}
-				break;
+				// NB: we have to manually exclude comment lines in MATLAB. Otherwise,
+				// the newline characters themselves on the comment lines will be
+				// commented out and ignored - resulting in the first true line of
+				// code being skipped unintentionally.
+				if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
+				command += line + "\\n";
 			}
+			command += "')";
+
+			// NB: this first eval turns a multi-line command into something properly
+			// formatted for MATLAB, stored in a temporary MATLAB variable
+			// We then have to evaluate this variable. However, the eval methods of
+			// MatlabControl force "eval(' + args + ')" and "eval('var')" displays
+			// the string literal "var", whereas "eval(var)" actually evaluates
+			// whatever is stored in var. We want the latter behavior, thus the
+			// need for a nested eval.
+			proxy.eval(command);
+
+			// Perform nested eval.. with or without a return value
+			try {
+				// Attempt to get a return value
+				finalResult = proxy.returningEval("eval(" + scriptVar + ")", 1);
+			}
+			catch (final MatlabInvocationException e) {
+				// no return value. Just eval and be done.
+				// NB: modified MATLAB variables can be accessed via the bindings.
+				proxy.eval("eval(" + scriptVar + ")");
+			}
+
+			proxy.eval("clearvars " + scriptVar);
 		}
 		catch (final Exception e) {}
 
