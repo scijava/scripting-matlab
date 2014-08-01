@@ -64,7 +64,7 @@ public class MATLABOptions extends OptionsPlugin
 	// Fields
 
 	@Parameter(label = "Hide MATLAB UI")
-	private boolean hidden = true;
+	private boolean hidden = false;
 
 	@Parameter(label = "Allow multithreaded MATLAB")
 	private boolean multithreaded = true;
