@@ -1,14 +1,25 @@
-Scripting-MATLAB
-================
+# MATLAB Scripting
 
-Sci-Java scripting plugin allowing MATLAB-language evaluations.
+This library provides a
+[JSR-223-compliant](https://en.wikipedia.org/wiki/Scripting_for_the_Java_Platform)
+scripting plugin for the [MATLAB](http://www.mathworks.com/products/matlab/) language.
 
-NB: use of this plugin requires a valid MATLAB installation.
+It is implemented as a `ScriptLanguage` plugin for the [SciJava
+Common](https://github.com/scijava/scijava-common) platform, which means that
+in addition to being usable directly as a `javax.script.ScriptEngineFactory`,
+it also provides some functionality on top, such as the ability to generate
+lines of script code based on SciJava events.
 
-Known limitations:
-* Preferences may not persistable (see http://www.mathworks.com/matlabcentral/answers/894-java-usernodeforpackage-function-fails-under-matlab-on-os-x)
-* If run within ImageJ, setting ImageJ#exitWhenQuitting(true) may cause MATLAB to hang indefinitely when closing.
-* Basic MATLAB evaluations can be done remotely (from an applicaiton running externally to MATLAB). However, transfer of objects (e.g. via script parameters) requires running of scripts from within MATLAB. See http://fiji.sc/Miji.
-* Simultaneous MATLAB connections (e.g. running scripts on multiple threads) will cause multiple MATLAB instances to be spawned, preventing sharing of any state between them.
+For a complete list of scripting languages available as part of the SciJava
+platform, see the
+[Scripting](https://github.com/scijava/scijava-common/wiki/Scripting) page on
+the SciJava Common wiki.
 
-Tested MATLAB version(s): MATLAB_R2011b
+See also:
+* [MATLAB Scripting](http://wiki.imagej.net/MATLAB_Scripting)
+  on the ImageJ wiki.
+
+Restrictions:
+* Requires a valid MATLAB installation!
+* [Preferences may not be persistable](http://www.mathworks.com/matlabcentral/answers/894-java-usernodeforpackage-function-fails-under-matlab-on-os-x)
+* Basic MATLAB evaluations can be done remotely (from an applicaiton running externally to MATLAB). However, transfer of more complex objects (e.g. via script parameters) requires running of scripts from within MATLAB. See [MIJI](http://fiji.sc/Miji).
