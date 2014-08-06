@@ -60,9 +60,17 @@ public class MATLABScriptLanguage extends AbstractScriptLanguage {
 	}
 
 	@Override
-	public ScriptEngine getScriptEngine() {
-		return new MATLABScriptEngine();
+	public Object decode(final Object o) {
+		if (o != null && o instanceof Object[]) {
+			Object[] oArray = (Object[])o;
+			if (oArray.length == 1) return oArray[0];
+		}
+
+		return o;
 	}
 
-
+	@Override
+	public ScriptEngine getScriptEngine() {
+		return new MATLABScriptEngine(getContext());
+	}
 }

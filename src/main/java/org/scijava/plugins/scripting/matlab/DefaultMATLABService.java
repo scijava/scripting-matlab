@@ -31,29 +31,89 @@
 
 package org.scijava.plugins.scripting.matlab;
 
+import javax.script.ScriptEngine;
+
 import matlabcontrol.extensions.MatlabNumericArray;
 
+import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
+ * Default {@link MATLABService} implementation.
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Service.class)
-public class DefaultMATLABService extends AbstractService implements
-	MATLABService
+public class DefaultMATLABService extends
+	AbstractSingletonService<MATLABCommands> implements MATLABService
 {
 
 	@Parameter
 	private ScriptService scriptService;
 
+	@Parameter
+	private LogService logService;
+
+	private boolean initializedCommands = false;
+
+	@Override
+	public String commandHelp() {
+		String helpMessage = "--- MATLAB Command Plugins ---\n\n";
+
+		for (final MATLABCommands command : getInstances()) {
+			helpMessage += command.usage();
+		}
+
+		helpMessage += "\n";
+
+		return helpMessage;
+	}
+
+	@Override
+	public void initializeCommands() {
+		if (!initializedCommands) createCommandVariables();
+	}
+
+	@Override
+	public void makeMATLABVariable(final String name, final Object value) {
+		final ScriptEngine engine =
+				scriptService.getLanguageByName("MATLAB").getScriptEngine();
+		engine.put(name, value);
+	}
+
 	// -- Service methods --
 
 	@Override
 	public void initialize() {
+		// Register known data type aliases for use in script @parameters
 		scriptService.addAlias("matrix", MatlabNumericArray.class);
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public Class<MATLABCommands> getPluginType() {
+		return MATLABCommands.class;
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Helper method to create variables for each {@link MATLABCommands} within
+	 * MATLAB.
+	 */
+	private synchronized void createCommandVariables() {
+		if (!initializedCommands) {
+			for (final MATLABCommands command : getInstances()) {
+				final String name = command.getInfo().getName();
+
+				makeMATLABVariable(name, command);
+			}
+			initializedCommands = true;
+		}
 	}
 }

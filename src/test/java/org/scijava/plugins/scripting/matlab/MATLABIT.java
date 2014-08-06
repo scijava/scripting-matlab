@@ -42,6 +42,8 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.script.ScriptLanguage;
@@ -55,6 +57,23 @@ import org.scijava.script.ScriptService;
  */
 public class MATLABIT {
 
+	private Context context;
+	private ScriptService scriptService;
+
+	@Before
+	public void setUp() {
+		context = new Context();
+		scriptService = context.getService(ScriptService.class);
+
+	}
+
+	@After
+	public void tearDown() {
+		context.dispose();
+		context = null;
+		scriptService = null;
+	}
+
 	/**
 	 * Simple script test for executing a basic MATLAB command and checking the
 	 * return value.
@@ -63,12 +82,10 @@ public class MATLABIT {
 	public void testBasic() throws InterruptedException, ExecutionException,
 		IOException, ScriptException
 	{
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script = "(1+2)";
 		final ScriptModule m = scriptService.run("add.m", script, true).get();
-		assertTrue(equalDoubleArrays(new double[] { 3.0 }, (double[]) ((Object[]) m
-			.getReturnValue())[0]));
+		assertTrue(equalDoubleArrays(new double[] { 3.0 }, (double[]) m
+			.getReturnValue()));
 	}
 
 	/**
@@ -79,12 +96,10 @@ public class MATLABIT {
 	public void testBasicMultiline() throws InterruptedException,
 		ExecutionException, IOException, ScriptException
 	{
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script = "(1+...\n2)";
 		final ScriptModule m = scriptService.run("add.m", script, true).get();
-		assertTrue(equalDoubleArrays(new double[] { 3.0 }, (double[]) ((Object[]) m
-			.getReturnValue())[0]));
+		assertTrue(equalDoubleArrays(new double[] { 3.0 }, (double[]) m
+			.getReturnValue()));
 	}
 
 	/**
@@ -92,9 +107,6 @@ public class MATLABIT {
 	 */
 	@Test
 	public void testLocals() throws ScriptException {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
-
 		final ScriptLanguage language = scriptService.getLanguageByExtension("m");
 		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(MATLABScriptEngine.class, engine.getClass());
@@ -117,8 +129,6 @@ public class MATLABIT {
 	public void testIfElse() throws InterruptedException, ExecutionException,
 		IOException, ScriptException
 	{
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script =
 			"if (1 == 2)\n" + "   testVar = 75\n" + "else\n" + "   testVar = 42\n"
 				+ "end\n";
@@ -141,8 +151,6 @@ public class MATLABIT {
 	public void testComments() throws IOException, ScriptException,
 		InterruptedException, ExecutionException
 	{
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script =
 			"% comment line one\n" + "% comment line two\n" + "if (1 == 2)\n"
 				+ "   testVar = 75\n" + "else\n" + "% comment line three\n"

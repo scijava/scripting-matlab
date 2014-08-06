@@ -35,6 +35,7 @@ import matlabcontrol.MatlabConnectionException;
 import matlabcontrol.MatlabProxy;
 import matlabcontrol.MatlabProxyFactory;
 import matlabcontrol.MatlabProxyFactoryOptions;
+import matlabcontrol.MatlabProxyFactoryOptions.Builder;
 
 /**
  * Utility class for maintaining a single entry point to the MATLAB executable.
@@ -43,9 +44,7 @@ import matlabcontrol.MatlabProxyFactoryOptions;
  */
 public final class MATLABControlUtils {
 
-	private static final MatlabProxyFactoryOptions options =
-		new MatlabProxyFactoryOptions.Builder().setHidden(true)
-			.setUsePreviouslyControlledSession(true).build();
+	// -- Cached proxy --
 
 	private static MatlabProxy proxy = null;
 
@@ -53,19 +52,72 @@ public final class MATLABControlUtils {
 		// Private constructor to prevent utility class instantiation
 	}
 
+	// -- Public API --
+
+	/**
+	 * @return True if there is an active MATLAB connection.
+	 */
+	public static boolean hasProxy() {
+		return proxy != null;
+	}
+
 	/**
 	 * A running MATLAB instance can only have one proxy active at a time.
 	 * Attempting to create multiple proxies will cause additional instances of
 	 * MATLAB to be spawned - which we would like to avoid. Thus this method will
 	 * cache a proxy and return it if it is still connected. If not, a new proxy
-	 * will be generated.
+	 * will be generated with the default configuration:
+	 * <ul>
+	 * <li>hidden = true</li>
+	 * <li>multithreaded = true</li>
+	 * <li>license = null</li>
+	 * </ul>
 	 *
 	 * @return An active {@link MatlabProxy}.
 	 */
 	public static MatlabProxy proxy() {
+		return proxy(true);
+	}
+
+	/**
+	 * As {@link #proxy()}, with a specification flag for whether or not the
+	 * MATLAB instance should be hidden and automatically exit when the calling
+	 * JVM is shut down.
+	 *
+	 * @param hidden If MATLAB should run hidden (no command prompt)
+	 * @return An active {@link MatlabProxy}.
+	 */
+	public static MatlabProxy proxy(final boolean hidden) {
+		return proxy(hidden, true);
+	}
+
+	/**
+	 * As {@link #proxy(boolean)} with a specification flag for whether or not
+	 * MATLAB should be allowed to run multithreaded.
+	 *
+	 * @param hidden If MATLAB should run hidden (no command prompt)
+	 * @param multithreaded If MATLAB is allowed to be multithreaded
+	 * @return An active {@link MatlabProxy}.
+	 */
+	public static MatlabProxy proxy(final boolean hidden,
+		final boolean multithreaded) {
+		return proxy(hidden, multithreaded, null);
+	}
+
+	/**
+	 * As {@link #proxy(boolean, boolean)} with a specification string for the
+	 * MATLAB license file.
+	 *
+	 * @param hidden If MATLAB should run hidden (no command prompt)
+	 * @param multithreaded If MATLAB is allowed to be multithreaded
+	 * @param license Path to MATLAB license
+	 * @return An active {@link MatlabProxy}.
+	 */
+	public static MatlabProxy proxy(final boolean hidden,
+		final boolean multithreaded, final String license) {
 		if (proxy == null || !proxy.isConnected()) {
 			try {
-				proxy = factory().getProxy();
+				proxy = factory(hidden, multithreaded, license).getProxy();
 			}
 			catch (final MatlabConnectionException e) {
 				throw new IllegalStateException(e);
@@ -75,16 +127,36 @@ public final class MATLABControlUtils {
 	}
 
 	/**
+	 * As {@link #proxy(boolean, boolean, String)} using the settings in the
+	 * given {@link MATLABOptions}
+	 *
+	 * @param options - Cached options for proxy configuration
+	 * @return An active {@link MatlabProxy}.
+	 */
+	public static MatlabProxy proxy(final MATLABOptions options) {
+		final boolean hidden = options.isHidden();
+		final boolean multithreaded = options.isMultithreaded();
+		final String license = options.licensePath();
+
+		return proxy(hidden, multithreaded, license);
+	}
+
+	// -- Helper methods --
+
+	/**
 	 * Returns a factory for creating {@link MatlabProxy} instances with the
-	 * following configuration:
-	 * <ul>
-	 * <li>The MATLAB application window will be hidden</li<
-	 * <li>New proxies will attempt to connect to existing MATLAB instances</li>
-	 * </ul>
+	 * specified configuration
 	 *
 	 * @return A configured {@link MatlabProxyFactory}.
 	 */
-	public static MatlabProxyFactory factory() {
-		return new MatlabProxyFactory(options);
+	private static MatlabProxyFactory factory(final boolean hidden,
+		final boolean multithreaded, final String license)
+	{
+		Builder builder = new MatlabProxyFactoryOptions.Builder();
+		builder = builder.setUsePreviouslyControlledSession(true);
+		builder = builder.setUseSingleComputationalThread(multithreaded);
+		builder = builder.setHidden(hidden);
+		if (license != null) builder = builder.setLicenseFile(license);
+		return new MatlabProxyFactory(builder.build());
 	}
 }

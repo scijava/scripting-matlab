@@ -31,44 +31,23 @@
 package org.scijava.plugins.scripting.matlab;
 
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.SingletonService;
-import org.scijava.service.Service;
+import org.scijava.plugin.RichPlugin;
+import org.scijava.plugin.SingletonPlugin;
+
 
 /**
- * {@link Service} performing any utility operations required for MATLAB.
+ * A suite of commands for use in MATLAB. The {@link MATLABService} will create
+ * variables for each {@link MATLABCommands} using their annotated
+ * {@link Plugin#name()}, allowing convenient access to any of their methods.
+ *
+ * @see MATLABService
  *
  * @author Mark Hiner
  */
-public interface MATLABService extends SingletonService<MATLABCommands> {
+public interface MATLABCommands extends SingletonPlugin, RichPlugin {
 
 	/**
-	 * Builds a complete usage message by querying the
-	 * {@link MATLABCommands#usage()} method of all available commands.
-	 *
-	 * @return A formatted string of all available {@link MATLABCommands}.
+	 * @return A string describing any commands that should be publicized.
 	 */
-	String commandHelp();
-
-	/**
-	 * Creates a MATLAB variable for each {@link MATLABCommands} plugin using the
-	 * {@link Plugin#name()} property as an identifier.
-	 * <p>
-	 * For example, if you create an {@code AwesomeMATLABCommands} class with
-	 * {@code name=FOO} and method {@code public void bar()}, after calling this
-	 * method you will be able to execute {@code FOO.bar} from within MATLAB.
-	 * </p>
-	 * <p>
-	 * NB: execution of this method requires a valid MATLAB installation.
-	 * </p>
-	 */
-	void initializeCommands();
-
-	/**
-	 * Attempts to create a variable in MATLAB with the give name and value.
-	 * <p>
-	 * NB: execution of this method should only be called from within a valid
-	 * MATLAB installation.
-	 * </p>
-	 */
-	void makeMATLABVariable(String name, Object value);
+	String usage();
 }
