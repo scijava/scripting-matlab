@@ -50,11 +50,6 @@ import org.scijava.script.ScriptLanguage;
 public class MATLABScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
-	public String getLanguageName() {
-		return "MATLAB";
-	}
-
-	@Override
 	public List<String> getExtensions() {
 		return Arrays.asList("m");
 	}
