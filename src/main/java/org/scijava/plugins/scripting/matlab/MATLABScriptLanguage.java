@@ -46,7 +46,7 @@ import org.scijava.script.ScriptLanguage;
  * @author Mark Hiner
  * @see ScriptEngine
  */
-@Plugin(type = ScriptLanguage.class)
+@Plugin(type = ScriptLanguage.class, name = "MATLAB")
 public class MATLABScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
