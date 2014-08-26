@@ -102,19 +102,24 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		Object finalResult = null;
 		try {
 			final String scriptVar = "scijava_script" + new Random().nextInt(999999);
-			String command = scriptVar + " = sprintf('";
-			while (bufReader.ready()) {
-				final String line = bufReader.readLine();
-				if (line == null) break;
-
+			StringBuilder command = new StringBuilder(scriptVar + " = sprintf('");
+			String line = "";
+			while ((line = bufReader.readLine()) != null) {
 				// NB: we have to manually exclude comment lines in MATLAB. Otherwise,
 				// the newline characters themselves on the comment lines will be
 				// commented out and ignored - resulting in the first true line of
 				// code being skipped unintentionally.
 				if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
-				command += line + "\\n";
+				else if (line.matches(".*[\\w].*" + COMMENT + ".*")){
+					// We need to strip out any comments, as they consume the newline
+					// character leading to incorrect script parsing.
+					command.append(line.substring(0, line.indexOf(COMMENT)));
+				}
+				else command.append(line);
+
+				command.append("\\n");
 			}
-			command += "')";
+			command.append("')");
 
 			// NB: this first eval turns a multi-line command into something properly
 			// formatted for MATLAB, stored in a temporary MATLAB variable
@@ -123,7 +128,7 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 			// the string literal "var", whereas "eval(var)" actually evaluates
 			// whatever is stored in var. We want the latter behavior, thus the
 			// need for a nested eval.
-			proxy.eval(command);
+			proxy.eval(command.toString());
 
 			// Perform nested eval.. with or without a return value
 			try {
