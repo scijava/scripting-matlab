@@ -1,8 +1,8 @@
 /*
  * #%L
- * ImageJ software for multidimensional image processing and analysis.
+ * MATLAB scripting language plugin.
  * %%
- * Copyright (C) 2009 - 2014 Board of Regents of the University of
+ * Copyright (C) 2014 - 2015 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
