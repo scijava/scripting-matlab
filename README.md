@@ -1,4 +1,4 @@
-![](http://jenkins.imagej.net/job/scripting-Matlab/lastBuild/badge/icon)
+[![](http://jenkins.imagej.net/job/scripting-Matlab/lastBuild/badge/icon)](http://jenkins.imagej.net/job/scripting-Matlab/)
 
 # MATLAB Scripting
 
