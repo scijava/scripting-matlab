@@ -1,3 +1,5 @@
+![](http://jenkins.imagej.net/job/scripting-Matlab/lastBuild/badge/icon)
+
 # MATLAB Scripting
 
 This library provides a
