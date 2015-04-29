@@ -90,7 +90,7 @@
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>https://jenkins.imagej.net/job/scripting-Matlab/</url>
+		<url>http://jenkins.imagej.net/job/scripting-Matlab/</url>
 	</ciManagement>
 
 	<dependencies>
