@@ -93,6 +93,10 @@
 		<url>http://jenkins.imagej.net/job/scripting-Matlab/</url>
 	</ciManagement>
 
+	<properties>
+		<matlabcontrol.version>4.1.0</matlabcontrol.version>
+	</properties>
+
 	<dependencies>
 		<!-- SciJava dependencies -->
 		<dependency>
@@ -104,7 +108,7 @@
 		<dependency>
 			<groupId>com.google.code.matlabcontrol</groupId>
 			<artifactId>matlabcontrol</artifactId>
-			<version>4.1.0</version>
+			<version>${matlabcontrol.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
