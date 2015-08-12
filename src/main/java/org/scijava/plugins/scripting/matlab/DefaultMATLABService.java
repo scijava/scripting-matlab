@@ -127,10 +127,12 @@ public class DefaultMATLABService extends
 	 * MATLAB.
 	 */
 	private void removeCommandVariables() {
-		for (final MATLABCommands command : getInstances()) {
-			final String name = command.getInfo().getName();
+		if (initializedCommands) {
+			for (final MATLABCommands command : getInstances()) {
+				final String name = command.getInfo().getName();
 
-			makeMATLABVariable(name, null);
+				makeMATLABVariable(name, null);
+			}
 		}
 	}
 }
