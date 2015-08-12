@@ -93,6 +93,11 @@ public class DefaultMATLABService extends
 		scriptService.addAlias("matrix", MatlabNumericArray.class);
 	}
 
+	@Override
+	public void dispose() {
+		removeCommandVariables();
+	}
+
 	// -- Typed methods --
 
 	@Override
@@ -114,6 +119,18 @@ public class DefaultMATLABService extends
 				makeMATLABVariable(name, command);
 			}
 			initializedCommands = true;
+		}
+	}
+
+	/**
+	 * Helper method to remove variables for each {@link MATLABCommands} within
+	 * MATLAB.
+	 */
+	private void removeCommandVariables() {
+		for (final MATLABCommands command : getInstances()) {
+			final String name = command.getInfo().getName();
+
+			makeMATLABVariable(name, null);
 		}
 	}
 }

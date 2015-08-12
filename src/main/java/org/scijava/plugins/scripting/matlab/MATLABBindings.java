@@ -111,11 +111,12 @@ public class MATLABBindings implements Bindings {
 		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
 
 		// Try special MATLAB data types
-		if (MatlabNumericArray.class.isAssignableFrom(value.getClass())) {
+		if (value != null &&
+			MatlabNumericArray.class.isAssignableFrom(value.getClass()))
+		{
 			// Convert the dataset to a MATLAB array and set it as a local variable
 			// within MATLAB.
-			final MatlabTypeConverter converter =
-					new MatlabTypeConverter(proxy);
+			final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
 			try {
 				converter.setNumericArray(sanitize(name), (MatlabNumericArray) value);
 				return value;
