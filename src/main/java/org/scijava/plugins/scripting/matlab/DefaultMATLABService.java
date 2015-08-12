@@ -81,7 +81,7 @@ public class DefaultMATLABService extends
 	@Override
 	public void makeMATLABVariable(final String name, final Object value) {
 		final ScriptEngine engine =
-				scriptService.getLanguageByName("MATLAB").getScriptEngine();
+			scriptService.getLanguageByName("MATLAB").getScriptEngine();
 		engine.put(name, value);
 	}
 

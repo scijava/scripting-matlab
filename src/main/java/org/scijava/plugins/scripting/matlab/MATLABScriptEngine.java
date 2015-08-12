@@ -102,7 +102,8 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		Object finalResult = null;
 		try {
 			final String scriptVar = "scijava_script" + new Random().nextInt(999999);
-			StringBuilder command = new StringBuilder(scriptVar + " = sprintf('");
+			final StringBuilder command =
+				new StringBuilder(scriptVar + " = sprintf('");
 			String line = "";
 			while ((line = bufReader.readLine()) != null) {
 				// NB: we have to manually exclude comment lines in MATLAB. Otherwise,
@@ -110,7 +111,7 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 				// commented out and ignored - resulting in the first true line of
 				// code being skipped unintentionally.
 				if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
-				else if (line.matches(".*[\\w].*" + COMMENT + ".*")){
+				else if (line.matches(".*[\\w].*" + COMMENT + ".*")) {
 					// We need to strip out any comments, as they consume the newline
 					// character leading to incorrect script parsing.
 					command.append(line.substring(0, line.indexOf(COMMENT)));

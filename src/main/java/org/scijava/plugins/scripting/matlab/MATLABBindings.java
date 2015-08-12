@@ -131,7 +131,7 @@ public class MATLABBindings implements Bindings {
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
-				System.err.println(e.getStackTrace());
+			System.err.println(e.getStackTrace());
 		}
 
 		return null;
@@ -178,8 +178,7 @@ public class MATLABBindings implements Bindings {
 		// Attempt to retrieve special MATLAB types
 		try {
 			// try recovering key as a MatlabNumericArray
-			final MatlabTypeConverter converter =
-					new MatlabTypeConverter(proxy);
+			final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
 			v = converter.getNumericArray(k);
 		}
 		catch (final MatlabInvocationException e) {

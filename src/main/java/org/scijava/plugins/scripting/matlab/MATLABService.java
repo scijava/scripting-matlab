@@ -28,6 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package org.scijava.plugins.scripting.matlab;
 
 import org.scijava.plugin.Plugin;

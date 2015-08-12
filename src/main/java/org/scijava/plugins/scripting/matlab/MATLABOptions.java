@@ -47,16 +47,14 @@ import org.scijava.widget.Button;
 /**
  * Allows the setting and persisting of {@link MatlabProxyFactoryOptions}
  * configuration.
- * 
+ *
  * @author Mark Hiner
  */
-@Plugin(type = OptionsPlugin.class,
-	label = "MATLAB Options", menu = {
-		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
-			mnemonic = MenuConstants.EDIT_MNEMONIC), @Menu(label = "Options"),
-		@Menu(label = "MATLAB...") })
-public class MATLABOptions extends OptionsPlugin
-{
+@Plugin(type = OptionsPlugin.class, label = "MATLAB Options", menu = {
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC), @Menu(label = "Options"),
+	@Menu(label = "MATLAB...") })
+public class MATLABOptions extends OptionsPlugin {
 
 	@Parameter
 	private StatusService statusService;
@@ -64,13 +62,13 @@ public class MATLABOptions extends OptionsPlugin
 	// Fields
 
 	@Parameter(label = "Hide MATLAB UI")
-	private boolean hidden = false;
+	private final boolean hidden = false;
 
 	@Parameter(label = "Allow multithreaded MATLAB")
-	private boolean multithreaded = true;
+	private final boolean multithreaded = true;
 
 	@Parameter(label = "License file path", required = false)
-	private File licenseFile = null;
+	private final File licenseFile = null;
 
 	@Parameter(label = "Exit MATLAB", persist = false, callback = "endSession")
 	private Button endSession;
@@ -98,7 +96,7 @@ public class MATLABOptions extends OptionsPlugin
 				MATLABControlUtils.proxy(this).exit();
 				statusService.showStatus("MATLAB shutdown successful");
 			}
-			catch (MatlabInvocationException e) {
+			catch (final MatlabInvocationException e) {
 				statusService.showStatus("MATLAB shutdown failed");
 			}
 		}

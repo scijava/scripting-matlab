@@ -28,12 +28,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package org.scijava.plugins.scripting.matlab;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
-
 
 /**
  * A suite of commands for use in MATLAB. The {@link MATLABService} will create
@@ -41,7 +41,6 @@ import org.scijava.plugin.SingletonPlugin;
  * {@link Plugin#name()}, allowing convenient access to any of their methods.
  *
  * @see MATLABService
- *
  * @author Mark Hiner
  */
 public interface MATLABCommands extends SingletonPlugin, RichPlugin {

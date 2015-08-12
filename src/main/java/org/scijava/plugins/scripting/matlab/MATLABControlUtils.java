@@ -100,7 +100,8 @@ public final class MATLABControlUtils {
 	 * @return An active {@link MatlabProxy}.
 	 */
 	public static MatlabProxy proxy(final boolean hidden,
-		final boolean multithreaded) {
+		final boolean multithreaded)
+	{
 		return proxy(hidden, multithreaded, null);
 	}
 
@@ -114,7 +115,8 @@ public final class MATLABControlUtils {
 	 * @return An active {@link MatlabProxy}.
 	 */
 	public static MatlabProxy proxy(final boolean hidden,
-		final boolean multithreaded, final String license) {
+		final boolean multithreaded, final String license)
+	{
 		if (proxy == null || !proxy.isConnected()) {
 			try {
 				proxy = factory(hidden, multithreaded, license).getProxy();
@@ -127,8 +129,8 @@ public final class MATLABControlUtils {
 	}
 
 	/**
-	 * As {@link #proxy(boolean, boolean, String)} using the settings in the
-	 * given {@link MATLABOptions}
+	 * As {@link #proxy(boolean, boolean, String)} using the settings in the given
+	 * {@link MATLABOptions}
 	 *
 	 * @param options - Cached options for proxy configuration
 	 * @return An active {@link MatlabProxy}.
