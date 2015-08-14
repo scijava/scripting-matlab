@@ -34,11 +34,12 @@ package org.scijava.plugins.scripting.matlab;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.script.ScriptException;
 
-import matlabcontrol.MatlabInvocationException;
 import matlabcontrol.MatlabProxy;
 
 import org.scijava.Context;
@@ -99,7 +100,7 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		final MATLABOptions options =
 			optionsService.getOptions(MATLABOptions.class);
 		final MatlabProxy proxy = MATLABControlUtils.proxy(options);
-		Object finalResult = null;
+		final List<String> returnVars = new ArrayList<String>();
 		try {
 			final String scriptVar = "scijava_script" + new Random().nextInt(999999);
 			final StringBuilder command =
@@ -110,7 +111,14 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 				// the newline characters themselves on the comment lines will be
 				// commented out and ignored - resulting in the first true line of
 				// code being skipped unintentionally.
-				if (line.matches("^[^\\w]*" + COMMENT + ".*")) continue;
+				if (line.matches("^[^\\w]*" + COMMENT + ".*")) {
+					if (line.contains("OUTPUT")) {
+						// Store variable names for retrieval later
+						final String[] split = line.split("\\s+");
+						returnVars.add(split[split.length - 1]);
+					}
+					continue;
+				}
 				else if (line.matches(".*[\\w].*" + COMMENT + ".*")) {
 					// We need to strip out any comments, as they consume the newline
 					// character leading to incorrect script parsing.
@@ -136,22 +144,30 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 			// need for a nested eval.
 			proxy.eval(command.toString());
 
-			// Perform nested eval.. with or without a return value
-			try {
-				// Attempt to get a return value
-				finalResult = proxy.returningEval("eval(" + scriptVar + ")", 1);
-			}
-			catch (final MatlabInvocationException e) {
-				// no return value. Just eval and be done.
-				// NB: modified MATLAB variables can be accessed via the bindings.
-				proxy.eval("eval(" + scriptVar + ")");
-			}
+			// We  use the non-returning evaluation and then evaluate the
+			// values of any OUTPUT types manually. This is because we can not
+			// define functions with return values during evaluation.
+			// NB: This means that evaluating single-line functions that would have
+			// a return value will NOT work. We are giving up that functionality
+			// to evaluate -scripts-
+			proxy.eval("eval(" + scriptVar + ")");
 
 			proxy.eval("clearvars " + scriptVar);
 		}
 		catch (final Exception e) {}
 
-		return finalResult;
+		// Populate return values if applicable
+		Object[] finalVals = null;
+		if (!returnVars.isEmpty()) {
+			finalVals = new Object[returnVars.size()];
+			int i = 0;
+
+			for (String var : returnVars) {
+				finalVals[i++] = get(var);
+			}
+		}
+
+		return finalVals;
 	}
 
 	/**
