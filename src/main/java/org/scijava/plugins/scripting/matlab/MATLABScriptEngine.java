@@ -46,6 +46,7 @@ import org.scijava.Context;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.script.AbstractScriptEngine;
+import org.scijava.script.ScriptService;
 
 /**
  * A MATLAB interpreter.
@@ -73,6 +74,9 @@ import org.scijava.script.AbstractScriptEngine;
 public class MATLABScriptEngine extends AbstractScriptEngine {
 
 	private static final String COMMENT = "%";
+
+	@Parameter
+	private ScriptService scriptService;
 
 	@Parameter
 	private OptionsService optionsService;
@@ -111,6 +115,8 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 				// the newline characters themselves on the comment lines will be
 				// commented out and ignored - resulting in the first true line of
 				// code being skipped unintentionally.
+				// TODO use ScriptService to get OUTPUT names instead of reparsing
+				// See https://github.com/scijava/scijava-common/issues/176
 				if (line.matches("^[^\\w]*" + COMMENT + ".*")) {
 					if (line.contains("OUTPUT")) {
 						// Store variable names for retrieval later
