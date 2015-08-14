@@ -62,13 +62,13 @@ public class MATLABOptions extends OptionsPlugin {
 	// Fields
 
 	@Parameter(label = "Hide MATLAB UI")
-	private final boolean hidden = false;
+	private boolean hidden = false;
 
 	@Parameter(label = "Allow multithreaded MATLAB")
-	private final boolean multithreaded = true;
+	private boolean multithreaded = true;
 
 	@Parameter(label = "License file path", required = false)
-	private final File licenseFile = null;
+	private File licenseFile = null;
 
 	@Parameter(label = "Exit MATLAB", persist = false, callback = "endSession")
 	private Button endSession;
