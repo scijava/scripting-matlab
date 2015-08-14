@@ -45,6 +45,7 @@ import matlabcontrol.MatlabProxy;
 import matlabcontrol.extensions.MatlabNumericArray;
 import matlabcontrol.extensions.MatlabTypeConverter;
 
+import org.scijava.log.LogService;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 
@@ -57,6 +58,9 @@ public class MATLABBindings implements Bindings {
 
 	@Parameter
 	private OptionsService optionsService;
+
+	@Parameter
+	private LogService logService;
 
 	@Override
 	public int size() {
@@ -122,7 +126,7 @@ public class MATLABBindings implements Bindings {
 				return value;
 			}
 			catch (final MatlabInvocationException e) {
-				System.err.println(e.getStackTrace());
+				logService.warn(e);
 			}
 		}
 
@@ -131,7 +135,7 @@ public class MATLABBindings implements Bindings {
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
-			System.err.println(e.getStackTrace());
+			logService.warn(e);
 		}
 
 		return null;
@@ -182,7 +186,7 @@ public class MATLABBindings implements Bindings {
 			v = converter.getNumericArray(k);
 		}
 		catch (final MatlabInvocationException e) {
-			System.err.println(e.getStackTrace());
+			logService.warn(e);
 		}
 
 		try {
@@ -190,7 +194,7 @@ public class MATLABBindings implements Bindings {
 			if (remove) proxy.eval("clear " + k);
 		}
 		catch (final MatlabInvocationException e) {
-			System.err.println(e.getStackTrace());
+			logService.warn(e);
 		}
 
 		return v;
