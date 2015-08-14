@@ -114,7 +114,12 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 				else if (line.matches(".*[\\w].*" + COMMENT + ".*")) {
 					// We need to strip out any comments, as they consume the newline
 					// character leading to incorrect script parsing.
-					command.append(line.substring(0, line.indexOf(COMMENT)));
+					line = line.substring(0, line.indexOf(COMMENT));
+
+					// Add escaped single quotes where needed
+					line = line.replaceAll("'", "\''");
+
+					command.append(line);
 				}
 				else command.append(line);
 
