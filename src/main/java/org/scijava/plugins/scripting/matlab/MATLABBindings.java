@@ -45,6 +45,7 @@ import matlabcontrol.MatlabProxy;
 import matlabcontrol.extensions.MatlabNumericArray;
 import matlabcontrol.extensions.MatlabTypeConverter;
 
+import org.scijava.convert.ConvertService;
 import org.scijava.log.LogService;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
@@ -58,6 +59,9 @@ public class MATLABBindings implements Bindings {
 
 	@Parameter
 	private OptionsService optionsService;
+
+	@Parameter
+	private ConvertService convertService;
 
 	@Parameter
 	private LogService logService;
@@ -115,18 +119,29 @@ public class MATLABBindings implements Bindings {
 		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
 
 		// Try special MATLAB data types
-		if (value != null &&
-			MatlabNumericArray.class.isAssignableFrom(value.getClass()))
-		{
+		if (value != null) {
+			MatlabNumericArray arrayVal = null;
+
+			// Cast if able
+			if (MatlabNumericArray.class.isAssignableFrom(value.getClass())) {
+				arrayVal = (MatlabNumericArray) value;
+			}
+			// Convert if able
+			else if (convertService.supports(value, MatlabNumericArray.class)) {
+				arrayVal = convertService.convert(value, MatlabNumericArray.class);
+			}
+
 			// Convert the dataset to a MATLAB array and set it as a local variable
 			// within MATLAB.
-			final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
-			try {
-				converter.setNumericArray(sanitize(name), (MatlabNumericArray) value);
-				return value;
-			}
-			catch (final MatlabInvocationException e) {
-				logService.warn(e);
+			if (arrayVal != null) {
+				final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
+				try {
+					converter.setNumericArray(sanitize(name), arrayVal);
+					return value;
+				}
+				catch (final MatlabInvocationException e) {
+					logService.warn(e);
+				}
 			}
 		}
 
