@@ -135,7 +135,9 @@ public class MATLABBindings implements Bindings {
 			return value;
 		}
 		catch (final MatlabInvocationException e) {
-			logService.warn(e);
+			logService.warn("Could not set variable: " + name +
+				".\n\tIf MATLAB is running remotely, value of:\n\t" + value +
+				"\n\tmust be converted to a MatlabNumericArray.");
 		}
 
 		return null;
