@@ -198,20 +198,37 @@ public class MATLABBindings implements Bindings {
 
 		// Attempt to retrieve special MATLAB types
 		try {
+			// Only double arrays can be converted to MatlabNumericArrays.
+			// This is a highly aggressive conversion but currently no known
+			// alternative.
+			final String command = k + " = double(" + k + ");";
+			proxy.eval(command);
+
 			// try recovering key as a MatlabNumericArray
 			final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
 			v = converter.getNumericArray(k);
 		}
 		catch (final MatlabInvocationException e) {
-			logService.warn(e);
+			logService.warn("Could not convert: " + k +
+				" to a MatlabNumericArray.\n\tDimensionality information may be lost.");
 		}
 
-		try {
-			v = proxy.getVariable(k);
-			if (remove) proxy.eval("clear " + k);
+		if (v == null) {
+			try {
+				v = proxy.getVariable(k);
+			}
+			catch (final MatlabInvocationException e) {
+				logService.warn(e);
+			}
 		}
-		catch (final MatlabInvocationException e) {
-			logService.warn(e);
+
+		if (remove) {
+			try {
+				proxy.eval("clear " + k);
+			}
+			catch (MatlabInvocationException e) {
+				logService.warn(e);
+			}
 		}
 
 		return v;
