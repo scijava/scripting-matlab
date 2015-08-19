@@ -57,6 +57,8 @@ import org.scijava.plugin.Parameter;
  */
 public class MATLABBindings implements Bindings {
 
+	// -- Parameters --
+
 	@Parameter
 	private OptionsService optionsService;
 
@@ -66,9 +68,17 @@ public class MATLABBindings implements Bindings {
 	@Parameter
 	private LogService logService;
 
+	// -- Fields --
+
+	private final Set<String> keys = new HashSet<String>();
+	private final Set<Object> values = new HashSet<Object>();
+	private final Map<String, Object> entries = new HashMap<String, Object>();
+
+	// -- Map API --
+
 	@Override
 	public int size() {
-		return getVars().length;
+		return keySet().size();
 	}
 
 	@Override
@@ -85,18 +95,26 @@ public class MATLABBindings implements Bindings {
 	public void clear() {
 		try {
 			MATLABControlUtils.proxy(opts()).eval("clear");
+			values.clear();
+			keys.clear();
+			entries.clear();
 		}
-		catch (final MatlabInvocationException e) {}
+		catch (final MatlabInvocationException e) {
+			logService.error(e);
+		}
 	}
 
 	@Override
 	public Set<String> keySet() {
-		return new HashSet<String>(Arrays.asList(getVars()));
+		keys.clear();
+		keys.addAll(Arrays.asList(getVars()));
+
+		return keys;
 	}
 
 	@Override
 	public Collection<Object> values() {
-		final Set<Object> values = new HashSet<Object>();
+		values.clear();
 		for (final String key : keySet()) {
 			final Object v = get(key);
 			if (v != null) values.add(get(key));
@@ -106,12 +124,12 @@ public class MATLABBindings implements Bindings {
 
 	@Override
 	public Set<java.util.Map.Entry<String, Object>> entrySet() {
-		final Map<String, Object> map = new HashMap<String, Object>();
+		entries.clear();
 		for (final String key : keySet()) {
 			final Object v = get(key);
-			if (v != null) map.put(key, v);
+			if (v != null) entries.put(key, v);
 		}
-		return map.entrySet();
+		return entries.entrySet();
 	}
 
 	@Override
@@ -179,6 +197,8 @@ public class MATLABBindings implements Bindings {
 	public Object remove(final Object key) {
 		return retrieveValue(key, true);
 	}
+
+	// -- Helper methods --
 
 	/**
 	 * Helper method for retrieving a value for a given key. Can optionally remove
@@ -253,7 +273,9 @@ public class MATLABBindings implements Bindings {
 				(String[]) MATLABControlUtils.proxy(opts()).returningEval("who", 1)[0];
 			return vars;
 		}
-		catch (final MatlabInvocationException e) {}
+		catch (final MatlabInvocationException e) {
+			logService.error(e);
+		}
 		return new String[0];
 	}
 
