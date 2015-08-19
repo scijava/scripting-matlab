@@ -104,7 +104,6 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		final MATLABOptions options =
 			optionsService.getOptions(MATLABOptions.class);
 		final MatlabProxy proxy = MATLABControlUtils.proxy(options);
-		final List<String> returnVars = new ArrayList<String>();
 		try {
 			final String scriptVar = "scijava_script" + new Random().nextInt(999999);
 			final StringBuilder command =
@@ -115,14 +114,7 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 				// the newline characters themselves on the comment lines will be
 				// commented out and ignored - resulting in the first true line of
 				// code being skipped unintentionally.
-				// TODO use ScriptService to get OUTPUT names instead of reparsing
-				// See https://github.com/scijava/scijava-common/issues/176
 				if (line.matches("^[^\\w]*" + COMMENT + ".*")) {
-					if (line.contains("OUTPUT")) {
-						// Store variable names for retrieval later
-						final String[] split = line.split("\\s+");
-						returnVars.add(split[split.length - 1]);
-					}
 					continue;
 				}
 				else if (line.matches(".*[\\w].*" + COMMENT + ".*")) {
@@ -162,18 +154,7 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		}
 		catch (final Exception e) {}
 
-		// Populate return values if applicable
-		Object[] finalVals = null;
-		if (!returnVars.isEmpty()) {
-			finalVals = new Object[returnVars.size()];
-			int i = 0;
-
-			for (String var : returnVars) {
-				finalVals[i++] = get(var);
-			}
-		}
-
-		return finalVals;
+		return null;
 	}
 
 	/**
