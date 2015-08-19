@@ -206,25 +206,24 @@ public class MATLABBindings implements Bindings {
 		// Array types will lose dimensionality if simply called via getVariable.
 		// We need to convert the object to a double array in MATLAB so we can use
 		// the MatlabNumericArray class.
-		// NB: we can allow singleton array wrappers to be unwrapped by the
-		// MATLABScriptLanguage.decode method.
-		// We can NOT perform this double conversion in decode, however, because it
+		// NB: we can NOT perform this double conversion in decode because it
 		// requires the variable to still exist in MATLAB (which is not guaranteed
 		// by the time control passes to decode).
 		if (v != null && v.getClass().isArray())
 		{
 			try {
-				// Skip single element arrays
-				if ((int)((double[]) proxy.returningEval("numel(" + k + ")", 1)[0])[0]
-					!= 1)
-				{
-					final String command = k + " = double(" + k + ");";
-					proxy.eval(command);
+				final String command = k + " = double(" + k + ");";
+				proxy.eval(command);
 
-					// try recovering key as a MatlabNumericArray
-					final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
-					v = converter.getNumericArray(k);
+				// try recovering key as a MatlabNumericArray
+				final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
+				final MatlabNumericArray array = converter.getNumericArray(k);
+
+				// Unwrap single element arrays to primitive array
+				if (array.getLength() == 1) {
+					v = new double[] { array.getRealValue(0) };
 				}
+				else v = array;
 			}
 			catch (final MatlabInvocationException e) {
 				logService
