@@ -1,4 +1,4 @@
-% @OUTPUT double ans
+% @OUTPUT double[] ans
 
 % This trivial script demonstrates the use of
 % the "ans" variable in the SciJava-MATLAB
