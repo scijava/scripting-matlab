@@ -49,6 +49,7 @@ import org.scijava.convert.ConvertService;
 import org.scijava.log.LogService;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptModule;
 
 /**
  * A {@link Bindings} wrapper around MATLAB's local variables.
@@ -73,6 +74,8 @@ public class MATLABBindings implements Bindings {
 	private final Set<String> keys = new HashSet<String>();
 	private final Set<Object> values = new HashSet<Object>();
 	private final Map<String, Object> entries = new HashMap<String, Object>();
+	private String scriptModuleKey = ScriptModule.class.getName();
+	private Object scriptModule = null;
 
 	// -- Map API --
 
@@ -108,6 +111,7 @@ public class MATLABBindings implements Bindings {
 	public Set<String> keySet() {
 		keys.clear();
 		keys.addAll(Arrays.asList(getVars()));
+		if (scriptModule != null) keys.add(scriptModuleKey);
 
 		return keys;
 	}
@@ -135,6 +139,12 @@ public class MATLABBindings implements Bindings {
 	@Override
 	public Object put(final String name, final Object value) {
 		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
+
+		// If we aren't inside MATLAB we cache the ScriptModule in the local JVM
+		// Because MATLAB is running in a separate JVM we can not pass it a
+		// ScriptModule instance.
+		if (!proxy.isRunningInsideMatlab() &&
+			name.equals(scriptModuleKey)) return (scriptModule = value);
 
 		// Try special MATLAB data types
 		if (value != null) {
@@ -214,6 +224,8 @@ public class MATLABBindings implements Bindings {
 
 		final String k = (String) key;
 		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
+
+		if (!proxy.isRunningInsideMatlab() && k.equals(scriptModuleKey)) return scriptModule;
 
 		Object v = null;
 		try {
