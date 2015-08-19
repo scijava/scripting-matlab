@@ -190,35 +190,46 @@ public class MATLABBindings implements Bindings {
 	 * @return The retrieved value, or null if no value found.
 	 */
 	private Object retrieveValue(final Object key, final boolean remove) {
-		String k = null;
-		if (key instanceof String) k = (String) key;
-		else return null;
-		Object v = null;
+		if (!containsKey(key) || !(key instanceof String)) return null;
+
+		final String k = (String) key;
 		final MatlabProxy proxy = MATLABControlUtils.proxy(opts());
 
-		// Attempt to retrieve special MATLAB types
+		Object v = null;
 		try {
-			// Only double arrays can be converted to MatlabNumericArrays.
-			// This is a highly aggressive conversion but currently no known
-			// alternative.
-			final String command = k + " = double(" + k + ");";
-			proxy.eval(command);
-
-			// try recovering key as a MatlabNumericArray
-			final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
-			v = converter.getNumericArray(k);
+			v = proxy.getVariable(k);
 		}
 		catch (final MatlabInvocationException e) {
-			logService.warn("Could not convert: " + k +
-				" to a MatlabNumericArray.\n\tDimensionality information may be lost.");
+			logService.warn(e);
 		}
 
-		if (v == null) {
+		// Array types will lose dimensionality if simply called via getVariable.
+		// We need to convert the object to a double array in MATLAB so we can use
+		// the MatlabNumericArray class.
+		// NB: we can allow singleton array wrappers to be unwrapped by the
+		// MATLABScriptLanguage.decode method.
+		// We can NOT perform this double conversion in decode, however, because it
+		// requires the variable to still exist in MATLAB (which is not guaranteed
+		// by the time control passes to decode).
+		if (v != null && v.getClass().isArray())
+		{
 			try {
-				v = proxy.getVariable(k);
+				// Skip single element arrays
+				if ((int)((double[]) proxy.returningEval("numel(" + k + ")", 1)[0])[0]
+					!= 1)
+				{
+					final String command = k + " = double(" + k + ");";
+					proxy.eval(command);
+
+					// try recovering key as a MatlabNumericArray
+					final MatlabTypeConverter converter = new MatlabTypeConverter(proxy);
+					v = converter.getNumericArray(k);
+				}
 			}
 			catch (final MatlabInvocationException e) {
-				logService.warn(e);
+				logService
+					.warn("Could not convert: " + k +
+						" to a MatlabNumericArray.\n\tDimensionality information may be lost.");
 			}
 		}
 
