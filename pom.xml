@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scripting-matlab</artifactId>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>0.3.0</version>
 
 	<name>SciJava Scripting: MATLAB</name>
 	<description>MATLAB scripting language plugin.</description>
@@ -79,7 +79,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/scijava/scripting-matlab</connection>
 		<developerConnection>scm:git:git@github.com:scijava/scripting-matlab</developerConnection>
-		<tag>HEAD</tag>
+		<tag>scripting-matlab-0.3.0</tag>
 		<url>https://github.com/scijava/scripting-matlab</url>
 	</scm>
 
