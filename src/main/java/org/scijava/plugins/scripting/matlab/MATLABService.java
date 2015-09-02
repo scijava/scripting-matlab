@@ -33,6 +33,7 @@ package org.scijava.plugins.scripting.matlab;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SingletonService;
+import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 
 /**
@@ -40,7 +41,9 @@ import org.scijava.service.Service;
  *
  * @author Mark Hiner
  */
-public interface MATLABService extends SingletonService<MATLABCommands> {
+public interface MATLABService extends SingletonService<MATLABCommands>,
+	SciJavaService
+{
 
 	/**
 	 * Builds a complete usage message by querying the
