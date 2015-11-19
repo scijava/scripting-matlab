@@ -16,7 +16,6 @@
 	<description>MATLAB scripting language plugin.</description>
 	<url>http://scijava.org/</url>
 	<inceptionYear>2014</inceptionYear>
-
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
@@ -82,12 +81,10 @@
 		<tag>HEAD</tag>
 		<url>https://github.com/scijava/scripting-matlab</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/scijava/scripting-matlab/issues</url>
 	</issueManagement>
-
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/scripting-Matlab/</url>
@@ -96,6 +93,13 @@
 	<properties>
 		<matlabcontrol.version>4.1.0</matlabcontrol.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<!-- SciJava dependencies -->
@@ -143,12 +147,4 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
-
 </project>
