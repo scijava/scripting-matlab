@@ -61,7 +61,7 @@ public class DefaultMATLABService extends
 		String helpMessage = "--- MATLAB Command Plugins ---\n\n";
 
 		for (final MATLABCommands command : getInstances()) {
-			helpMessage += command.usage();
+			helpMessage += command.help();
 		}
 
 		helpMessage += "\n";

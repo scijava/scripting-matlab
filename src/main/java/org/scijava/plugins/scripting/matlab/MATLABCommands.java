@@ -48,5 +48,5 @@ public interface MATLABCommands extends SingletonPlugin, RichPlugin {
 	/**
 	 * @return A string describing any commands that should be publicized.
 	 */
-	String usage();
+	String help();
 }

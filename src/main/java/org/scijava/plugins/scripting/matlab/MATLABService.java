@@ -47,7 +47,7 @@ public interface MATLABService extends SingletonService<MATLABCommands>,
 
 	/**
 	 * Builds a complete usage message by querying the
-	 * {@link MATLABCommands#usage()} method of all available commands.
+	 * {@link MATLABCommands#help()} method of all available commands.
 	 *
 	 * @return A formatted string of all available {@link MATLABCommands}.
 	 */
