@@ -35,7 +35,6 @@ import javax.script.ScriptEngine;
 
 import matlabcontrol.extensions.MatlabNumericArray;
 
-import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -54,9 +53,6 @@ public class DefaultMATLABService extends
 
 	@Parameter
 	private ScriptService scriptService;
-
-	@Parameter
-	private LogService logService;
 
 	private boolean initializedCommands = false;
 
