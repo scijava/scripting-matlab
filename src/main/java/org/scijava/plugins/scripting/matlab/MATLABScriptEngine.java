@@ -121,13 +121,12 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 					// We need to strip out any comments, as they consume the newline
 					// character leading to incorrect script parsing.
 					line = line.substring(0, line.indexOf(COMMENT));
-
-					// Add escaped single quotes where needed
-					line = line.replaceAll("'", "\''");
-
-					command.append(line);
 				}
-				else command.append(line);
+
+				// Replace single quotes with two single quotes needed to get through sprintf and eval
+				line = line.replaceAll("'", "\'\'");
+
+				command.append(line);
 
 				command.append("\\n");
 			}
