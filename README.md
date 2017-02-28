@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/job/scripting-Matlab/lastBuild/badge/icon)](http://jenkins.imagej.net/job/scripting-Matlab/)
+[![](https://travis-ci.org/scijava/scripting-matlab.svg?branch=master)](https://travis-ci.org/scijava/scripting-matlab)
 
 # MATLAB Scripting
 

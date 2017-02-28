@@ -84,8 +84,8 @@
 		<url>https://github.com/scijava/scripting-matlab/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/scripting-Matlab/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/scijava/scripting-matlab</url>
 	</ciManagement>
 
 	<properties>
