@@ -14,7 +14,7 @@
 
 	<name>SciJava Scripting: MATLAB</name>
 	<description>MATLAB scripting language plugin.</description>
-	<url>http://scijava.org/</url>
+	<url>https://github.com/scijava/scripting-matlab</url>
 	<inceptionYear>2014</inceptionYear>
 	<organization>
 		<name>SciJava</name>
