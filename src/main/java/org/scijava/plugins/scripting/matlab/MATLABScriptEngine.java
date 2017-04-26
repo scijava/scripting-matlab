@@ -34,19 +34,17 @@ package org.scijava.plugins.scripting.matlab;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.script.ScriptException;
-
-import matlabcontrol.MatlabProxy;
 
 import org.scijava.Context;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.script.AbstractScriptEngine;
 import org.scijava.script.ScriptService;
+
+import matlabcontrol.MatlabProxy;
 
 /**
  * A MATLAB interpreter.
@@ -97,7 +95,6 @@ public class MATLABScriptEngine extends AbstractScriptEngine {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public Object eval(final Reader reader) throws ScriptException {
 		final BufferedReader bufReader = makeBuffered(reader);
