@@ -49,23 +49,25 @@ import matlabcontrol.MatlabProxy;
 /**
  * A MATLAB interpreter.
  * <p>
- * NB: we use <a
- * href="https://code.google.com/p/matlabcontrol/">MatlabControl</a> to
+ * NB: we use
+ * <a href="https://code.google.com/p/matlabcontrol/">MatlabControl</a> to
  * interpret MATLAB scripts. There are some limitations of this API:
+ * </p>
  * <ul>
  * <li>Each line of the script needs to be atomically evaluatable. That is, it
  * must be passable to an {@code eval} call in MATLAB. If you are unfamiliar
  * with the notation for converting traditionally multi-line commands, such as
  * an {@code if...else} block, to single-line, each logical statement is
- * replaced by a comma. For example, you can write: {@code if 1<2, a=3, end}</li>
+ * replaced by a comma. For example, you can write: {@code if 1<2, a=3, end}
+ * </li>
  * <li>If you need to split up multiple lines, use the MATLAB multi-line
  * character at the end of each line: {@code ...}</li>
  * <li>If you are running from within MATLAB, you will see an error message with
  * each evaluation. This is due to the API restrictions on the function calling
  * from MatlabControl, regarding return values. As long as you see the
- * appropriate output for your command, the error messages can be disregarded.</li>
+ * appropriate output for your command, the error messages can be disregarded.
+ * </li>
  * </ul>
- * </p>
  *
  * @author Mark Hiner
  */
