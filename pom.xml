@@ -95,6 +95,9 @@
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<matlabcontrol.version>4.1.0</matlabcontrol.version>
+
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 	</properties>
 
 	<repositories>
