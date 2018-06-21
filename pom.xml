@@ -90,14 +90,17 @@
 
 	<properties>
 		<package-name>org.scijava.plugins.scripting.matlab</package-name>
+
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
-		<matlabcontrol.version>4.1.0</matlabcontrol.version>
+		<license.excludes>**/script_templates/**</license.excludes>
 
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<matlabcontrol.version>4.1.0</matlabcontrol.version>
 	</properties>
 
 	<repositories>
