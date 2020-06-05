@@ -85,6 +85,9 @@ Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<license.excludes>**/script_templates/**</license.excludes>
 
+		<!-- NB: Skip integration tests by default. -->
+		<skipITs>true</skipITs>
+
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
