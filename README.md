@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/scijava/scripting-matlab.svg?branch=master)](https://travis-ci.org/scijava/scripting-matlab)
+[![](https://github.com/scijava/scripting-matlab/actions/workflows/build-main.yml/badge.svg)](https://github.com/scijava/scripting-matlab/actions/workflows/build-main.yml)
 
 # MATLAB Scripting
 
