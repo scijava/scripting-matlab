@@ -1,4 +1,4 @@
-[![](https://github.com/scijava/scripting-matlab/actions/workflows/build-main.yml/badge.svg)](https://github.com/scijava/scripting-matlab/actions/workflows/build-main.yml)
+[![Build Status](https://github.com/scijava/scripting-matlab/actions/workflows/build.yml/badge.svg)](https://github.com/scijava/scripting-matlab/actions/workflows/build.yml)
 
 # MATLAB Scripting
 
